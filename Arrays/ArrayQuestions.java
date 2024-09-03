@@ -11,11 +11,14 @@ public class ArrayQuestions {
         System.out.println(rearrangeElementsBySign());
         ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1, 2, -4, -5));
        // ArrayList<Integer> ans = RearrangebySign(new int []{1,2,-4,-5,3,6});
-        System.out.println("-------------------------");
+
      //   ans.stream().forEach(System.out::println);
       //  System.out.println(rearrangeElementsBySignVariety2(new int[]{1,2,-4,-5,3,6,-7}));
        // nextPermutationInAArray(new int[]{2,1,5,4,3,0,0});
-        nextPermutationInAArrayList(Arrays.asList(2,1,5,4,3,0,0));
+       // nextPermutationInAArrayList(Arrays.asList(2,1,5,4,3,0,0));
+        System.out.println(leadersInAnArray(new int[]{10,22,12,3,0,6}));
+        System.out.println("-------------------------");
+        System.out.println(optimalLongestConsecutiveSequenceInAGivenArray(new int[]{102,4,100,1,101,3,2,1,1}));
     }
 
     public static void removeDuplicatesFromASortedArray(int [] a){
@@ -321,5 +324,56 @@ public class ArrayQuestions {
             high--;
             return reverseArrayList(a,low,high);
         } else return a;
+    }
+
+    public static List<Integer> leadersInAnArray(int [] a){
+        // 10 22 12 3 0 6
+        int maxVal= a[a.length-1];
+        List<Integer> ans=new ArrayList<>();
+        ans.add(maxVal);
+        for(int i=a.length-2;i>=0;i--){
+            if(a[i]>maxVal){
+                ans.add(a[i]);
+                maxVal=a[i];
+            }
+        }
+        ans.forEach(System.out::println);
+        return ans;
+    }
+
+    public static int longestConsecutiveSequenceInAGivenArray(int [] a){
+        Arrays.sort(a);
+        int currCount=0,lastSmaller=Integer.MIN_VALUE,longest=1;
+        for(int i=0;i<a.length;i++){
+            if(a[i]-1 == lastSmaller){
+                currCount+=1;
+                lastSmaller=a[i];
+            } else if(a[i] != lastSmaller){
+                currCount=1;
+                lastSmaller=a[i];
+            }
+            longest=Math.max(longest,currCount);
+        }
+        return longest;
+    }
+
+    public static int optimalLongestConsecutiveSequenceInAGivenArray(int [] a){
+        int longest=1;
+        Set<Integer> set=new HashSet<>();
+        for(int i : a){
+            set.add(i);
+        }
+        for(int i : set){
+            int x=i,count=1;
+            if(!set.contains(i-1)){
+                while(set.contains(x+1)){
+                    count++;
+                    x=x+1;
+                }
+            }
+            longest=Math.max(count,longest);
+        }
+
+        return longest;
     }
  }

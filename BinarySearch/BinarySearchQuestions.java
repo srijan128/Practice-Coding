@@ -5,6 +5,8 @@ public class BinarySearchQuestions {
         int [] a=new int[]{1,2,3,5,6,8};
         System.out.println(binarySearchIterative(new int[]{1,2,3,5,6,8},5));
         System.out.println(binarySearchRecursive(a,5,0, a.length-1));
+
+        System.out.println(findLowerBound(a,7));
     }
 
     public static int binarySearchIterative(int [] a,int element){
@@ -43,7 +45,7 @@ public class BinarySearchQuestions {
                 ans = mid;
                 high = mid - 1;
             }
-            if(a[mid]<x){
+            else if(a[mid]<x){
                 low=mid+1;
             }
         }
@@ -61,7 +63,7 @@ public class BinarySearchQuestions {
                 ans = mid;
                 high = mid - 1;
             }
-            if(a[mid]<x){
+            else {
                 low=mid+1;
             }
         }

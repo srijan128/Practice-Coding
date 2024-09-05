@@ -6,6 +6,7 @@ public class ArrayQuestions {
     public static void main(String[] args) {
         removeDuplicatesFromASortedArray(new int[] {1,1,2,2,2,3,3});
         System.out.println(longestSubarrayWithSumK(new int[]{1,2,3,1,1,1,1,4,2,3},3));
+
         System.out.println(findMajorityElement(new int[]{2,2,1,3,1,1,3,1,1}));
         System.out.println(maxSubarraySum(new int[]{-2,-3,4,-1,-2,1,5,-3}));
         System.out.println(rearrangeElementsBySign());
@@ -19,6 +20,42 @@ public class ArrayQuestions {
         System.out.println(leadersInAnArray(new int[]{10,22,12,3,0,6}));
         System.out.println("-------------------------");
         System.out.println(optimalLongestConsecutiveSequenceInAGivenArray(new int[]{102,4,100,1,101,3,2,1,1}));
+        ArrayList<ArrayList<Integer>> matrix = new ArrayList<>();
+        matrix.add(new ArrayList<>(Arrays.asList(1, 1, 1)));
+        matrix.add(new ArrayList<>(Arrays.asList(1, 0, 1)));
+        matrix.add(new ArrayList<>(Arrays.asList(1, 1, 1)));
+
+        int n = matrix.size();
+        int m = matrix.get(0).size();
+
+        ArrayList<ArrayList<Integer>> ans = setMatrixZeros(matrix, n, m);
+        for (ArrayList<Integer> row : ans) {
+            for (Integer ele : row) {
+                System.out.print(ele + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("-------------------------");
+        List<List<Integer>> spiralMatrix = new ArrayList<>();
+        spiralMatrix.add(new ArrayList<>(Arrays.asList(1,3,7,9)));
+        spiralMatrix.add(new ArrayList<>(Arrays.asList(10,12,15,17)));
+        spiralMatrix.add(new ArrayList<>(Arrays.asList(19,20,21,50)));
+       // spiralMatrix.add(new ArrayList<>(Arrays.asList(13,12,11,10)));
+
+        System.out.println(spiralTraversalOfAMatrix(spiralMatrix));
+
+        System.out.println("-------------------------");
+        System.out.println(Arrays.toString(spiralMatrix(new int[][]{{1, 3, 7, 9}, {10, 12, 15, 17}, {19, 20, 21, 50}})));
+        System.out.println(countSubArraysWithGivenSum(new int[]{3,1,2,4},6));
+        System.out.println(nCr(6,2));
+        System.out.println(printARowInPascalTriangle(6));
+        List<List<Integer>> pascalsTriangle=printARowInPascalTriangleUptoGivenRow(5);
+        for(List<Integer> row:pascalsTriangle){
+            for(Integer element:row){
+                System.out.print(element + " ");
+            }
+            System.out.println();
+        }
     }
 
     public static void removeDuplicatesFromASortedArray(int [] a){
@@ -375,5 +412,185 @@ public class ArrayQuestions {
         }
 
         return longest;
+    }
+
+    // Multi-Dimensional Arrays
+    // wherever there is 0 mark corresponding row and column elements as 0
+    public static ArrayList<ArrayList<Integer>> setMatrixZeros(ArrayList<ArrayList<Integer>> matrix, int n, int m){
+        int [] row =new int[n];
+        int [] column=new int[m];
+
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(matrix.get(i).get(j) == 0){
+                    row[i]=1;
+                    column[j]=1;
+                }
+            }
+        }
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(row[i]==1 || column[j]==1){
+                    matrix.get(i).set(j,0);
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static List<Integer> spiralTraversalOfAMatrix(List<List<Integer>> listOfList){
+        // 1  2  3  4
+        // 15 16 17 8
+        // 14 19 18 9
+        // 13 12 11 10
+        List<Integer> ans=new ArrayList<>();
+        int top=0,left=0,bottom=listOfList.size()-1,right=listOfList.get(0).size()-1;
+        while(left <= right && top<=bottom){
+            for(int i=left;i<=right;i++){
+                ans.add(listOfList.get(top).get(i));
+            }
+            top++;
+            for(int i=top;i<=bottom;i++){
+                ans.add(listOfList.get(i).get(right));
+            }
+            right--;
+            if(top<=bottom) {
+                for (int i = right; i >= left; i--) {
+                    ans.add(listOfList.get(bottom).get(i));
+                }
+            }
+            bottom--;
+            if(left<=right) {
+                for (int i = bottom; i >= top; i--) {
+                    ans.add(listOfList.get(i).get(left));
+                }
+            }
+            left++;
+        }
+        return ans;
+    }
+
+    public static int [] spiralMatrix(int [][] listOfList) {
+        // Write your code here.
+        // List<Integer> ans=new ArrayList<>();
+
+        int top=0;
+        int left=0;
+        int bottom=listOfList.length-1;
+        int right=listOfList[0].length-1;
+        int [] ans =new int[listOfList.length*listOfList[0].length];
+        int index=0;
+        while(left <= right && top<=bottom){
+            for(int i=left;i<=right;i++){
+                // ans.add(listOfList.get(top).get(i));
+                if(index<=ans.length-1){
+                    ans[index]=listOfList[top][i];
+                    index++;
+                }
+
+                //index++;
+            }
+            top++;
+            for(int i=top;i<=bottom;i++){
+                // ans.add(listOfList.get(i).get(right));
+                if(index<=ans.length-1){
+                    ans[index]=listOfList[i][right];
+                    index++;
+                }
+
+            }
+            right--;
+            if(top<=bottom) {
+                for (int i = right; i >= left; i--) {
+                    // ans.add(listOfList.get(bottom).get(i));
+                    if(index<=ans.length-1){
+                        ans[index]=listOfList[bottom][i];
+                        index++;
+                    }
+
+                }
+            }
+            bottom--;
+            if(left<=right) {
+                for (int i = bottom; i >= top; i--) {
+                    //ans.add(listOfList.get(i).get(left));
+                    if(index<=ans.length-1){
+                        ans[index]=listOfList[i][left];
+                        index++;
+                    }
+
+                }
+            }
+            left++;
+        }
+        return ans;
+    }
+
+    public static int countSubArraysWithGivenSum(int [] a,int k){
+        // 3 1 2 4
+        int l =0,r=0;
+        int sum=0;
+        int count=0;
+        while(r<a.length){
+            sum+=a[r];
+            if(sum>k){
+                while(sum>k){
+                    sum-=a[l];
+                    l++;
+                }
+            } if(sum==k){
+                count++;
+            }
+            r++;
+        }
+        return count;
+    }
+
+
+    public static int nCr(int n,int r){
+        int res=1;
+        for(int i=0;i<r;i++){
+            res=res*(n-i);
+            res=res/(i+1);
+        }
+        return res;
+    }
+
+    public static List<Integer> printARowInPascalTriangle(int row){
+        List<Integer> ans=new ArrayList<>();
+       // ans.add(1);
+        int res=1;
+        for(int column=0;column<row;column++){
+            if(column==0)
+                ans.add(1);
+            else {
+                res = res * (row - column);
+                res = res / column;
+                ans.add(res);
+            }
+        }
+        return ans;
+    }
+
+    public static List<List<Integer>> printARowInPascalTriangleUptoGivenRow(int row){
+
+        List<List<Integer>> traingle=new ArrayList<>();
+        // ans.add(1);
+        for(int i=1;i<=row;i++) {
+            int res = 1;
+            List<Integer> ans=new ArrayList<>();
+            for (int column = 0; column < i; column++) {
+
+                if (column == 0)
+                    ans.add(1);
+                else {
+                    res = res * (i - column);
+                    res = res / column;
+                    ans.add(res);
+                }
+            }
+            traingle.add(ans);
+        }
+        return traingle;
     }
  }

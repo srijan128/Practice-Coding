@@ -1,5 +1,6 @@
 package BinarySearch;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BinarySearchQuestions {
@@ -270,5 +271,47 @@ Note:
             }
         }
         return index;
+    }
+
+    public static int singleElementInASortedArray(int [] a){
+        // 1 1 2 2 3 3 4 5 5 6 6
+        if(a.length==1)
+            return a[0];
+        if(a[a.length-1] !=a[a.length-2])
+            return a[a.length-1];
+        if(a[0] !=a[1])
+            return a[0];
+        int low=1,high=a.length-2;
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            if(a[mid] != a[mid-1] && a[mid] !=a[mid+1])
+                return mid;
+            //left hand side even odd index of elements
+            else if(mid%2==0 && a[mid+1]==a[mid] || mid%2==1 && a[mid-1]==a[mid])
+                low=mid+1;
+            //right hand side odd even index of elements
+            else high=mid-1;
+        }
+        return -1;
+    }
+
+    public static int findPeakElement(ArrayList<Integer> arr) {
+        // 1 8 1 5 3
+        if(arr.size()==1) return 0;
+        if(arr.get(0)>arr.get(1))
+            return 0;
+        if(arr.get(arr.size()-1)>arr.get(arr.size()-2))
+            return arr.get(arr.size()-1);
+        int low=1,high=arr.size()-2;
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            if(arr.get(mid)>arr.get(mid-1) && arr.get(mid)>arr.get(mid+1))
+                return mid;
+            else if(arr.get(mid)>arr.get(mid-1) && arr.get(mid)<arr.get(mid+1))
+                low=mid+1;
+            else
+                high=mid-1;
+        }
+        return -1;
     }
 }

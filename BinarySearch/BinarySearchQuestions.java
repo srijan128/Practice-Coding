@@ -6,6 +6,8 @@ import java.util.Arrays;
 public class BinarySearchQuestions {
     public static void main(String[] args) {
         int [] a=new int[]{1,2,3,5,6,8};
+        //System.out.println(Math.ceil((double) 2 /3));
+        System.out.println(leastWeightCapacity(new int[]{1,2,3,4,5,6,7,8,9,10},5));
         System.out.println(binarySearchIterative(new int[]{1,2,3,5,6,8},5));
         System.out.println(binarySearchRecursive(a,5,0, a.length-1));
 
@@ -314,4 +316,224 @@ Note:
         }
         return -1;
     }
+
+    public static int findNthRootUsingBinarySearch(int n, int m) {
+        // Write your code here.
+        if(m==0) return 0;
+        int low=1,high=m;
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            int midN=calcPower(mid,n,m);
+            if(midN==1) return mid;
+            else if(midN==2) high=mid-1;
+            else low=mid+1;
+        }
+        return -1;
+    }
+
+    public static int calcPower(int mid,int n,int m){
+        long ans=1;
+        //handling overflow scenario
+        // anytime the multiplication exceeds the given value return 2 to handle overflow
+        for(int i=1;i<=n;i++){
+            ans=ans*mid;
+            if(ans>m){
+                return 2;
+            }
+        }
+        if(ans==m) return 1;
+        return 0;
+    }
+
+
+    /*
+    A monkey is given ‘n’ piles of bananas, where the 'ith' pile has ‘a[i]’ bananas. An integer ‘h’ is also given,
+     which denotes the time (in hours) in which all the bananas should be eaten.
+Each hour, the monkey chooses a non-empty pile of bananas and eats ‘m’ bananas.
+If the pile contains less than ‘m’ bananas,
+then the monkey consumes all the bananas and won’t eat any more bananas in that hour.
+
+Find the minimum number of bananas ‘m’ to eat per hour so that the monkey can eat all the bananas within ‘h’ hours.
+
+Example:
+Input: ‘n’ = 4, ‘a’ =  [3, 6, 2, 8] , ‘h’ = 7
+Output: 3
+Explanation: If ‘m’ = 3, then
+The time taken to empty the 1st pile is 1 hour.
+The time taken to empty the 2nd pile is 2 hour.
+The time taken to empty the 3rd pile is 1 hour.
+The time taken to empty the 4th pile is 3 hour.
+Therefore, a total of 7 hours is taken.
+It can be shown that if the rate of eating bananas is reduced, they can’t be eaten in 7 hours.
+     */
+    public static int minimumRateToEatBananas(int []a, int givenHours) {
+        //a = 3 6 2 8 givenHours=7
+        int high=Integer.MIN_VALUE;
+        int ans=Integer.MAX_VALUE;
+        for(int i=0;i<a.length;i++){
+            high=Math.max(high,a[i]);
+        }
+        int low=1;
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            int totalTimeTakenConsideringMidAsAnswer=findTimeTaken(mid,a);
+            if(totalTimeTakenConsideringMidAsAnswer<=givenHours) {
+                ans = mid;
+                high=mid-1;
+            }
+            else low=mid+1;
+
+        }
+        return ans;
+    }
+
+
+    public static int findTimeTaken(int mid, int[] a) {
+        int totalTimeTaken=0;
+        for(int i=0;i<a.length;i++){
+            totalTimeTaken+= (int) Math.ceil((double)a[i] / (double)mid);
+        }
+        return totalTimeTaken;
+    }
+
+        /*
+    Problem statement
+You are given 'n' roses and you are also given an array 'arr' where 'arr[i]'
+denotes that the 'ith' rose will bloom on the 'arr[i]th' day.
+
+You can only pick already bloomed roses that are adjacent to make a bouquet.
+You are also told that you require exactly 'k' adjacent bloomed roses to make a single bouquet.
+
+Find the minimum number of days required to make at least 'm' bouquets each containing 'k' roses.
+Return -1 if it is not possible.
+Example :
+Input: n = 9,  arr = [ 1, 2, 1, 2, 7, 2, 2, 3, 1 ], k = 3, m = 2
+Output: 3.
+
+Explanation: This is because on the 3rd day: all the roses with 'arr[i]' less than equal to 3 have already
+bloomed, this means every rose except the 5th rose has bloomed. Now we can form the first bouquet from the
+first three roses and the second bouquet from the last three roses.
+     */
+public static int roseGarden(int[] a, int noOfFlowersRequiredPerBouquet, int minNoOfBouquets) {
+        int low=Integer.MAX_VALUE;
+        int high=Integer.MIN_VALUE;
+        if(noOfFlowersRequiredPerBouquet*minNoOfBouquets>a.length)
+            return -1;
+        for(int i=0;i<a.length;i++){
+            low=Math.min(a[i],low);
+        }
+
+        for(int i=0;i<a.length;i++){
+        high=Math.max(a[i],high);
+        }
+        //Range Calculation done
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            if(checkMinNoOfBouquetsForADay(a,mid,noOfFlowersRequiredPerBouquet,minNoOfBouquets)){
+                high=mid-1;
+            }else low=mid+1;
+        }
+        return low;
+    }
+    private static boolean checkMinNoOfBouquetsForADay(int[] a, int mid, int noOfFlowersRequiredPerBouquet, int minNoOfBouquets) {
+        int noOfBouquets=0,count=0;
+        for(int i:a){
+            if(i<=mid)
+                count++;
+            else{
+                noOfBouquets+=count/noOfFlowersRequiredPerBouquet;
+                count=0;
+            }
+        }
+        //check for the last outstanding flowers in the array when else is not evaluated
+        noOfBouquets+=count/noOfFlowersRequiredPerBouquet;
+        return noOfBouquets==minNoOfBouquets;
+    }
+
+    /*
+You are given an array of integers 'arr' and an integer 'limit'.
+
+Your task is to find the smallest positive integer divisor, such that upon dividing all the
+elements of the given array by it, the sum of the division's result is less than or equal
+to the given integer's limit.
+
+Note:
+Each result of the division is rounded to the nearest integer greater than or equal
+to that element. For Example, 7/3 = 3.
+     */
+    public static int smallestDivisor(int arr[], int limit) {
+        // Write your coder here
+        int low=1,high=findMax(arr);
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            if(checkSumWithLimit(arr,limit,mid))
+                high=mid-1;
+            else
+                low=mid+1;
+        }
+        return low;
+    }
+
+    private static int findMax(int [] a){
+        int max=Integer.MIN_VALUE;
+        for(int i:a)
+            max=Math.max(max,i);
+        return max;
+    }
+
+    private static boolean checkSumWithLimit(int [] a,int limit,int mid){
+        int sum=0;
+        for(int i:a){
+            sum+=Math.ceil((double)i/(double)mid);
+            if(sum>limit) return false;
+        }
+        return sum<=limit;
+    }
+
+    /*
+    You are the owner of a Shipment company. You use conveyor belts to ship packages
+    from one port to another. The packages must be shipped within 'd' days.
+The weights of the packages are given in an array 'weights'.
+The packages are loaded on the conveyor belts every day in
+the same order as they appear in the array. The loaded weights must not exceed the maximum weight
+capacity of the ship.
+Find out the least-weight capacity so that you can ship all the packages within 'd' days.
+//5 4 5 2 3 4 5 6
+     */
+
+    public static int leastWeightCapacity(int[] weights, int d) {
+        // Write your code here.
+        int sum=0;
+        int low=findMax(weights);
+        for(int i:weights)
+            sum+=i;
+        int high=sum;
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            int noOfDays=checkDaysRequiredBasedOnCapacity(mid, weights, d);
+            if(noOfDays<=d)
+                high=mid-1;
+            else
+                low=mid+1;
+        }
+        return low;
+    }
+
+
+    private static int checkDaysRequiredBasedOnCapacity(int mid,int [] a,int d){
+        int days=1,sumOfWeights=0;
+        for(int i=0;i<a.length;i++){
+            if(sumOfWeights+a[i]>mid) {
+                days++;
+                sumOfWeights = a[i];
+            }
+            else {
+             //   day++;
+                sumOfWeights+=a[i];
+               // sumOfWeights=0;
+            }
+        }
+        return days;
+    }
+
 }

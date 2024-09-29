@@ -3,7 +3,7 @@ package Arrays;
 import java.util.*;
 
 
-
+//Important Array Questions
 public class ArrayQuestions {
     public static void main(String[] args) {
      //   removeDuplicatesFromASortedArray(new int[] {1,1,2,2,2,3,3});

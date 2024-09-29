@@ -2,11 +2,17 @@ package Arrays;
 
 import java.util.*;
 
+
+
 public class ArrayQuestions {
     public static void main(String[] args) {
-        removeDuplicatesFromASortedArray(new int[] {1,1,2,2,2,3,3});
+     //   removeDuplicatesFromASortedArray(new int[] {1,1,2,2,2,3,3});
+        //setZeroes(new int[][]{{1,1,1},{1,0,1},{1,1,1}});
+        rotateMatrix(new int[][]{{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,16}});
         System.out.println(longestSubarrayWithSumK(new int[]{1,2,3,1,1,1,1,4,2,3},3));
-
+        //longestSubArrayWithGivenSumKPrefixSum
+        System.out.println(longestSubArrayWithGivenSumKPrefixSum(new int[]{1,2,3,1,1,1,1,4,2,3},3));
+        System.out.println("----------------------------");
         System.out.println(findMajorityElement(new int[]{2,2,1,3,1,1,3,1,1}));
         System.out.println(maxSubarraySum(new int[]{-2,-3,4,-1,-2,1,5,-3}));
         System.out.println(rearrangeElementsBySign());
@@ -49,7 +55,7 @@ public class ArrayQuestions {
         System.out.println(countSubArraysWithGivenSum(new int[]{3,1,2,4},6));
         System.out.println(nCr(6,2));
         System.out.println(printARowInPascalTriangle(6));
-        List<List<Integer>> pascalsTriangle=printARowInPascalTriangleUptoGivenRow(5);
+        List<List<Integer>> pascalsTriangle=printRowsInPascalTriangleUptoGivenRow(5);
         for(List<Integer> row:pascalsTriangle){
             for(Integer element:row){
                 System.out.print(element + " ");
@@ -73,6 +79,16 @@ public class ArrayQuestions {
         }
         for(int k=0;k<=i;k++)
             System.out.println(a[k]);
+    }
+
+    public static int [] rotateArrayByKPlaces(int [] a, int k){
+        reverseArray(a,0,k-1);
+        reverseArray(a,k,a.length-1);
+        reverseArray(a,0,a.length-1);
+        System.out.println("-------------------");
+        Arrays.stream(a).forEach(System.out::println);
+
+        return a;
     }
 
     public static int BruteForcelongestSubarrayWithSumK(int [] a,int k) {
@@ -317,6 +333,20 @@ public class ArrayQuestions {
         return a;
     }
 
+
+    public static ArrayList<Integer> reverseArrayList(ArrayList<Integer> a, int low, int high){
+        while(low<=high){
+            int temp=a.get(low);
+            //a=a[high];
+            a.set(low,a.get(high));
+           // a[high]=temp;
+            a.set(high,temp);
+            low++;
+            high--;
+        }
+        return a;
+    }
+
     public static void nextPermutationInAArrayList(List<Integer> a){
         //2 1 5 4 3 0 0
         int pivot=-1;
@@ -379,7 +409,9 @@ public class ArrayQuestions {
     }
 
     public static int longestConsecutiveSequenceInAGivenArray(int [] a){
+        //102 4 100 1 101 3 2 1 1
         Arrays.sort(a);
+        // 1 1 1 2 3 4 100 101 102
         int currCount=0,lastSmaller=Integer.MIN_VALUE,longest=1;
         for(int i=0;i<a.length;i++){
             if(a[i]-1 == lastSmaller){
@@ -395,11 +427,13 @@ public class ArrayQuestions {
     }
 
     public static int optimalLongestConsecutiveSequenceInAGivenArray(int [] a){
+        //102 4 100 1 101 3 2 1 1
         int longest=1;
         Set<Integer> set=new HashSet<>();
         for(int i : a){
             set.add(i);
         }
+        //1 2 3 4 100 101 102
         for(int i : set){
             int x=i,count=1;
             if(!set.contains(i-1)){
@@ -437,6 +471,71 @@ public class ArrayQuestions {
         }
         return matrix;
     }
+
+    public static ArrayList<ArrayList<Integer>> optimalSetMatrixZeros(ArrayList<ArrayList<Integer>> matrix, int n, int m){
+        // 1 1 1 1
+        // 1 0 1 1
+        // 1 1 0 1
+        // 0 1 1 1
+        int [] rows=new int[n];
+        int [] columns=new int[m];
+
+      /*  for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++)
+                if(matrix.get(i).get(j)==0){
+                    rows[i]=1;
+                    columns[j]=1;
+                }
+        }
+
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(rows[i]==1 || columns[j]==1)
+                    matrix.get(i).set(j,0);
+            }
+        }
+        return matrix;
+
+       */
+        // 1 1 1 1
+        // 1 0 1 1
+        // 1 1 0 1
+        // 0 1 1 1
+        int col0=1;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(matrix.get(i).get(j)==0){
+                    matrix.get(i).set(0,0);
+                    if(j!=0)
+                        matrix.get(0).set(j,0);
+                    else
+                        col0=0;
+                }
+            }
+        }
+
+        for(int i=1;i<n;i++){
+            for(int j=1;j<m;j++){
+                if(matrix.get(i).get(j)!=0){
+                    if(matrix.get(i).get(0) == 0 || matrix.get(0).get(j) == 0)
+                        matrix.get(i).set(j,0);
+                }
+            }
+        }
+
+        if(matrix.get(0).get(0) == 0){
+            for(int j=0;j<m;j++)
+                matrix.get(0).set(j,0);
+        }
+
+        if(col0==0){
+            for(int i=0;i<n;i++)
+                matrix.get(i).set(0,0);
+        }
+        return matrix;
+
+    }
+
 
     public static List<Integer> spiralTraversalOfAMatrix(List<List<Integer>> listOfList){
         // 1  2  3  4
@@ -572,7 +671,7 @@ public class ArrayQuestions {
         return ans;
     }
 
-    public static List<List<Integer>> printARowInPascalTriangleUptoGivenRow(int row){
+    public static List<List<Integer>> printRowsInPascalTriangleUptoGivenRow(int row){
 
         List<List<Integer>> traingle=new ArrayList<>();
         // ans.add(1);
@@ -593,4 +692,117 @@ public class ArrayQuestions {
         }
         return traingle;
     }
- }
+
+    public static int longestSubArrayWithGivenSumKPrefixSum(int [] a,int givenSum){
+        // 1 2 3 1 1 1 1 4 2 3
+        int i=0,sum=0,max=0;
+        Map<Integer,Integer> map=new HashMap<>();
+        while(i<a.length){
+            sum+=a[i];
+            if(sum==givenSum)
+                max=Math.max(max,i+1);
+            if(map.containsKey(sum-givenSum))
+                max=Math.max(max,i-map.get(sum-givenSum));
+            if(!map.containsKey(sum))
+                map.put(sum,i);
+            i++;
+        }
+        return max;
+    }
+
+
+    public static void setZeroes(int[][] matrix) {
+        int col0=1;
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[i].length;j++){
+                if(matrix[i][j]==0){
+                    matrix[i][0]=0;
+                    if(j!=0)
+                        matrix[0][j]=0;
+                    else
+                        col0=0;
+                }
+            }
+        }
+
+        for(int i=1;i<matrix.length;i++){
+            for(int j=1;j<matrix[i].length;j++){
+                if(matrix[i][j]!=0){
+                    if(matrix[i][0] == 0 || matrix[0][j] == 0)
+                        matrix[i][j]=0;
+                }
+            }
+        }
+
+        if(matrix[0][0] == 0){
+            for(int j=0;j<matrix[0].length;j++)
+                matrix[0][j]=0;
+        }
+
+        if(col0==0){
+            for(int i=0;i<matrix.length;i++)
+                matrix[i][0]=0;
+        }
+        // return matrix;
+        Arrays.stream(matrix).forEach(System.out::println);
+
+    }
+
+
+    public static void rotateMatrix(int [][] matrix){
+        // 1 2 3 4
+        // 5 6 7 8
+        // 9 10 11 12
+        // 13 14 15 16
+        for(int i=0;i<matrix.length;i++){
+            for(int j=i;j<matrix[i].length;j++){
+                int temp=0;
+                temp=matrix[i][j];
+                matrix[i][j]=matrix[j][i];
+                matrix[j][i]=temp;
+
+            }
+        }
+
+
+
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[i].length/2;j++){
+               int temp=0;
+               temp=matrix[i][j];
+               matrix[i][j]=matrix[i][matrix[i].length-j-1];
+                matrix[i][matrix[i].length-j-1]=temp;
+            }
+
+        }
+
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[i].length;j++){
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+
+    }
+
+    public static int secondLargest(int [] a){
+        //10 4 9 12
+        int smax=Integer.MIN_VALUE;
+        int fmax=a[0];
+        for(int i=1;i<a.length;i++){
+            if(a[i]>fmax && a[i]!=smax){
+                smax=fmax;
+                fmax=a[i];
+            }else if(a[i]<fmax && a[i]>smax){
+                smax=a[i];
+            }
+        }
+//        if(smax==Integer.MIN_VALUE)
+//            return -1;
+        return smax==Integer.MIN_VALUE?-1:smax;
+    }
+
+
+
+}

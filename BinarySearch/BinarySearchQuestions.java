@@ -6,7 +6,16 @@ import java.util.Arrays;
 public class BinarySearchQuestions {
     public static void main(String[] args) {
         int [] a=new int[]{1,2,3,5,6,8};
+        String ans="";
         //System.out.println(Math.ceil((double) 2 /3));
+        ArrayList<Integer> list =increasingNumbers(1);
+      //  list.forEach(System.out::println);
+        for(Integer i: list){
+           ans+=i + ",";
+        }
+       // if(n==1)
+        System.out.println(ans.substring(2,ans.length()-1));
+      /*  System.out.println(kthMissingNumber(new int[]{2,3,4,7,11},5));
         System.out.println(leastWeightCapacity(new int[]{1,2,3,4,5,6,7,8,9,10},5));
         System.out.println(binarySearchIterative(new int[]{1,2,3,5,6,8},5));
         System.out.println(binarySearchRecursive(a,5,0, a.length-1));
@@ -14,6 +23,16 @@ public class BinarySearchQuestions {
         System.out.println(findLowerBound(a,7));
         System.out.println(findFloorInAnArray(new int[]{3,17,23},12));
         System.out.println(Arrays.toString(firstAndLastOccurrenceOfAElement(new int[]{2, 4, 6, 8, 8, 8, 11, 13}, 8)));
+
+       */
+        System.out.println(kthMissingNumber(new int[]{2,3,4,7,11},5));
+
+        System.out.println(AggressiveCowsBinarySearch(new int[]{0,3,4,7,10,9},4));
+        ArrayList<Integer> arr=new ArrayList<>();
+        arr.add(12); arr.add(34); arr.add(67); arr.add(90);
+        System.out.println(allocateBooksBinarySearch(arr,2));
+
+        System.out.println(largestSubarraySumMinimized(new int[]{1,2,3,4,5},3));
     }
 
     public static int binarySearchIterative(int [] a,int element){
@@ -536,4 +555,294 @@ Find out the least-weight capacity so that you can ship all the packages within 
         return days;
     }
 
+    public static int kthMissingNumber(int [] a,int k){
+        // 2 3 4 7 11
+        int count=0;
+        for(int i:a){
+            if(i<=k){
+                count++;
+                k++;
+            }
+
+        }
+        System.out.println("count " +count + "k" +k);
+        return k;
+    }
+
+    public static ArrayList<Integer> increasingNumbers(int n) {
+        ArrayList<Integer> res = new ArrayList<>();
+
+        solve(n,0,new StringBuilder(),res);
+        return res;
+    }
+
+   public static void solve(int n, int idx, StringBuilder sb, ArrayList<Integer> res) {
+        if(idx==n) {
+            res.add(Integer.parseInt(sb.toString()));
+            return;
+        }
+        for (int i = 0; i <= 9; i++) {
+            if(i==0 && n > 1)
+                continue;
+            if(sb.length()==0 || Integer.valueOf(sb.charAt(idx-1)-'0') <= i) {
+                sb.append(i);
+                solve(n,idx+1,sb,res);
+                sb.deleteCharAt(sb.length()-1);
+            }
+        }
+    }
+
+    //Aggressive Cows
+    public static int AggressiveCowsBruteForce(int [] stalls, int cows){
+        Arrays.sort(stalls);
+        //Running loop for min and max distance between two cows
+        for(int dist=1;dist<=stalls[stalls.length-1]-stalls[0];dist++){
+            if(placementOfCows(stalls, cows, dist)){
+                continue;
+            }else
+                return dist-1;
+        }
+        return -1;
+    }
+
+    public static int AggressiveCowsBinarySearch(int [] stalls, int cows){
+        Arrays.sort(stalls);
+        int ans=-1;
+        int low=1,high=stalls[stalls.length-1]-stalls[0];
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            if(placementOfCows(stalls,cows,mid)){
+                ans=mid;
+                low=mid+1;
+            }else
+                high=mid-1;
+        }
+        return ans;
+    }
+
+    private static boolean placementOfCows(int[] stalls, int cows, int dist) {
+        int count=1,lastCowPlaced=stalls[0];
+        for(int i=1;i<stalls.length;i++){
+            if(stalls[i]-lastCowPlaced>=dist){
+                count++;
+                lastCowPlaced=stalls[i];
+            }
+
+        }
+        return count>=cows;
+    }
+
+
+
+    public static int allocateBooksBruteForce(int [] books,int students){
+        if(books.length<students)
+            return -1;
+        int max=findMax(books);
+        int sumOfPagesInAllBooks=0;
+        for(int i:books){
+            sumOfPagesInAllBooks+=i;
+        }
+        for(int maxPages=max;maxPages<=sumOfPagesInAllBooks;maxPages++){
+            int countOfStudents=studentCountForAllBooks(books,maxPages);
+            if(countOfStudents==students)
+                return maxPages;
+        }
+        return -1;
+    }
+
+    private static int findMaxinArrayList(ArrayList<Integer> arr){
+        int max=Integer.MIN_VALUE;
+        for(int i:arr)
+            max=Math.max(max,i);
+        return max;
+    }
+
+    public static int allocateBooksBinarySearch(ArrayList<Integer> books,int students){
+        int ans=-1;
+        if(books.size()<students)
+            return -1;
+        int low=findMaxinArrayList(books);
+
+        int sumOfPagesInAllBooks=0;
+        for(int i:books){
+            sumOfPagesInAllBooks+=i;
+        }
+        int high=sumOfPagesInAllBooks;
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            int countOfStudents=studentCountForAllBooks(books,mid);
+            if(countOfStudents>students) {
+                low = mid + 1;
+            }
+            else{
+                ans=mid;
+                high=mid-1;
+            }
+
+        }
+        return ans;
+    }
+
+    private static int studentCountForAllBooks(int[] books, int maxPagesPerStudent) {
+        int count=1,pagesPerStudent=0;
+        for(int i=0;i<books.length;i++){
+            if(pagesPerStudent+books[i]<=maxPagesPerStudent){
+                pagesPerStudent+=books[i];
+            }else{
+                count++;
+                pagesPerStudent=books[i];
+            }
+        }
+        return count;
+    }
+
+    private static int studentCountForAllBooks(ArrayList<Integer> books, int maxPages) {
+        int count=1,pagesPerStudent=0;
+        for(int i=0;i<books.size();i++){
+            if(pagesPerStudent+books.get(i)<=maxPages){
+                pagesPerStudent+=books.get(i);
+            }else{
+                count++;
+                pagesPerStudent=books.get(i);
+            }
+        }
+        return count;
+    }
+
+    /*
+
+Problem statement
+Given an array/list of length ‘n’, where the array/list represents the boards and each element of the given
+array/list represents the length of each board. Some ‘k’ numbers of painters are available to paint these boards.
+Consider that each unit of a board takes 1 unit of time to paint.
+
+You are supposed to return the area of the minimum time to get this job done of painting all the ‘n’ boards
+under a constraint that any painter will only paint the continuous sections of boards.
+
+Example :
+Input: arr = [2, 1, 5, 6, 2, 3], k = 2
+
+Output: 11
+
+Explanation:
+First painter can paint boards 1 to 3 in 8 units of time and the second painter can paint boards 4-6 in 11 units
+of time. Thus both painters will paint all the boards in max(8,11) = 11 units of time. It can be shown
+that all the boards can't be painted in less than 11 units of time.
+     */
+
+    public static int paintersPartition(ArrayList<Integer> boards, int painters){
+        // As we are trying to find maximum each time, hence the board with maximum value
+        // will be requiring the highest time to be completed
+        // Hence for the time range the start value is the highest array value
+        if(boards.size()<painters) return -1;
+        int startMaxAPainterCanBeAssigned=findMaxinArrayList(boards);
+        int endMaxAPainterCanBeAssigned=boards.stream().mapToInt(i-> i).sum();
+        for(int time=startMaxAPainterCanBeAssigned;time<=endMaxAPainterCanBeAssigned;time++){
+            int countOfPaintersReqd=checkCountOfPainters(boards,time);
+            if(countOfPaintersReqd==painters)
+                // Minimum Time As we return the immediate the first value of the match
+                return time;
+        }
+        return -1;
+    }
+
+
+    public static int paintersPartitionBinarySearch(ArrayList<Integer> boards, int painters){
+        // As we are trying to find maximum each time, hence the board with maximum value
+        // will be requiring the highest time to be completed
+        // Hence for the time range the start value is the highest array value
+        int ans =-1;
+        if(boards.size()<painters) return ans;
+        int startMaxAPainterCanBeAssigned=findMaxinArrayList(boards);
+        int endMaxAPainterCanBeAssigned=boards.stream().mapToInt(i-> i).sum();
+        while(startMaxAPainterCanBeAssigned<=endMaxAPainterCanBeAssigned){
+            int timeToValidatePainterCount=startMaxAPainterCanBeAssigned+(endMaxAPainterCanBeAssigned-startMaxAPainterCanBeAssigned)/2;
+            int countOfPainters=checkCountOfPainters(boards,timeToValidatePainterCount);
+            if(countOfPainters>painters)
+                startMaxAPainterCanBeAssigned=timeToValidatePainterCount+1;
+            else {
+                ans=timeToValidatePainterCount;
+                endMaxAPainterCanBeAssigned=timeToValidatePainterCount-1;
+            }
+        }
+        return ans;
+    }
+
+    private static int checkCountOfPainters(ArrayList<Integer> boards, int time) {
+        int countPainters=1,timeUsed=0;
+        for(int i=0;i<boards.size();i++){
+            if(boards.get(i)+timeUsed<=time){
+                timeUsed+=boards.get(i);
+            }else {
+                countPainters++;
+                timeUsed=boards.get(i);
+            }
+        }
+        return countPainters;
+    }
+
+/*
+Problem statement
+Given an integer array ‘A’ of size ‘N’ and an integer ‘K'.
+
+Split the array ‘A’ into ‘K’ non-empty subarrays such that the largest sum of any subarray is minimized.
+
+Your task is to return the minimized largest sum of the split.
+A subarray is a contiguous part of the array.
+
+Example:
+Input: ‘N’ = 5, ‘A’ = [1, 2, 3, 4, 5], ‘K’ = 3
+Output: 6
+
+Explanation: There are many ways to split the array ‘A’ into K consecutive subarrays. The best way to do this is
+to split the array ‘A’ into [1, 2, 3], [4], and [5], where the largest sum among the three subarrays is only 6.
+ */
+    public static int largestSubarraySumMinimized(int []a, int noOfSubarray) {
+        int ans=-1;
+        if(a.length<noOfSubarray) return ans;
+        int lowRangeOfMaxValues=findMax(a);
+        int highRangeOfMaxValues= Arrays.stream(a).sum();
+        System.out.println("Sum" + highRangeOfMaxValues);
+        for(int range=lowRangeOfMaxValues;range<=highRangeOfMaxValues;range++){
+            int countOfSubarrays=validateCountOfSplittedSubarrays(a,range);
+            if(countOfSubarrays==noOfSubarray) {
+                ans= range;
+                break;
+            }
+        }
+        return ans;
+    }
+
+
+    public static int largestSubarraySumMinimizedBinarySearch(int []a, int noOfSubarray) {
+        int ans=-1;
+        if(a.length<noOfSubarray) return ans;
+        int lowRangeOfMaxValues=findMax(a);
+        int highRangeOfMaxValues= Arrays.stream(a).sum();
+        while(lowRangeOfMaxValues<=highRangeOfMaxValues){
+            int rangeOfMaxSum=lowRangeOfMaxValues+(highRangeOfMaxValues-lowRangeOfMaxValues)/2;
+            int countOfSubarrays=validateCountOfSplittedSubarrays(a,rangeOfMaxSum);
+            if(countOfSubarrays>noOfSubarray)
+                lowRangeOfMaxValues=rangeOfMaxSum+1;
+            else {
+                ans=rangeOfMaxSum;
+                highRangeOfMaxValues=rangeOfMaxSum-1;
+            }
+        }
+
+        return ans;
+    }
+
+    private static int validateCountOfSplittedSubarrays(int[] a, int range) {
+        int count=1,sumAdded=0;
+        for(int i=0;i<a.length;i++){
+            if(a[i]+sumAdded<=range)
+                sumAdded+=a[i];
+            else {
+                count++;
+                sumAdded=a[i];
+            }
+        }
+        return count;
+    }
 }

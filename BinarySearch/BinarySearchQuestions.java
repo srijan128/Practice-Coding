@@ -2,11 +2,14 @@ package BinarySearch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class BinarySearchQuestions {
     public static void main(String[] args) {
         int [] a=new int[]{1,2,3,5,6,8};
         String ans="";
+        int [] a1=new int[]{2, 3, 7, 10, 11, 11, 25};
+        findLowerBound(a1,9);
         //System.out.println(Math.ceil((double) 2 /3));
         ArrayList<Integer> list =increasingNumbers(1);
       //  list.forEach(System.out::println);
@@ -63,6 +66,7 @@ public class BinarySearchQuestions {
     // Given an element x, find the smallest index a[index]>=x
     // if the lower bound doesn't exist its hypothetical index is array length
     public static int findLowerBound(int [] a,int x){
+        //a[] = [2, 3, 7, 10, 11, 11, 25], x = 9
         int ans =a.length;
         int low=0,high=a.length-1;
         while(low<=high){

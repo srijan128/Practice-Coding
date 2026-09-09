@@ -1,11 +1,14 @@
 package Strings;
 
+import linkedlist.Node;
+
 import java.util.*;
 
 
 public class PracticeQuestions {
     public static void main(String[] args) {
         System.out.println("Hello");
+        System.out.println(reverseWordsOfAString("He is Ram"));
         System.out.println(minWindowSubString("fight","it"));
         System.out.println(findAnagramsIndices("CBAEBABACD",5,"ABC",2));
         System.out.println(rearrangeCharactersInAString("aaabc"));
@@ -45,6 +48,9 @@ public class PracticeQuestions {
         System.out.println(st1.length() + " " + st2.length());
         System.out.println("leetcode");
         System.out.println(lengthOfLongestSubstringWithoutRepeatingCharacters("pwwkew"));
+        String s3="1 2 3 4";
+        String [] s4=s3.split(" ");
+        System.out.println(Arrays.toString(s4));
     }
 
     public static boolean checkSubsequenceInAString(String s, String sub){
@@ -56,6 +62,121 @@ public class PracticeQuestions {
             i++;
         }
         return (j==sub.length());
+    }
+
+
+    // 5. Longest Palindromic Substring
+    public String longestPalindrome(String s) {
+        if(s.length()<=1)
+            return s;
+        String LPS="";
+        for(int i=1;i<s.length();i++){
+            // odd length palindromes
+            int low=i,high=i;
+
+            while(s.charAt(low)==s.charAt(high)){
+                low--;
+                high++;
+                if(low==-1 || high==s.length())
+                    break;
+
+            }
+            String palindrome=s.substring(low+1,high);
+            if(palindrome.length()>LPS.length()){
+                LPS=palindrome;
+            }
+        }
+
+        for(int i=1;i<s.length();i++){
+            // even length palindromes
+            int low=i-1,high=i;
+            while(s.charAt(low)==s.charAt(high)){
+                low--;
+                high++;
+                if(low==-1 || high==s.length()){
+                    break;
+                }
+            }
+
+            String palindrome=s.substring(low+1,high);
+            if(palindrome.length()>LPS.length()){
+                LPS=palindrome;
+            }
+        }
+        return LPS;
+    }
+
+
+    // 647. Palindromic Substrings
+
+    public int countSubstrings(String s) {
+        int count = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            // Count palindromes with odd length
+            count += countPalindromes(s, i, i);
+
+            // Count palindromes with even length
+            count += countPalindromes(s, i-1, i);
+        }
+
+        return count;
+    }
+
+    private int countPalindromes(String s, int left, int right) {
+        int count = 0;
+
+        // Check for palindromes
+        while (left >= 0 && right < s.length()
+                && s.charAt(left) == s.charAt(right)) {
+            count++;
+            left--;
+            right++;
+        }
+
+        return count;
+    }
+
+    //234. Palindrome Linked List
+    public boolean isPalindrome(Node head) {
+        if (head == null || head.next == null) {
+            return true;
+        }
+
+        Node slow=head; Node fast=head;
+
+        while(fast!=null && fast.next!=null){
+            slow=slow.next;
+            fast=fast.next.next;
+        }
+
+        Node firstHalfHead=head;
+        Node secondHalfHead=reverseLinkedList(slow);
+        boolean isPal=true;
+        Node p1=firstHalfHead;
+        Node p2=secondHalfHead;
+        while(p2 !=null){
+            if(p1.value!= p2.value){
+                isPal=false;
+                break;
+            }
+            p1=p1.next;
+            p2=p2.next;
+        }
+        return isPal;
+    }
+
+    private Node reverseLinkedList(Node head) {
+
+        Node prev=null;
+        Node curr=head;
+        while(curr!=null){
+            Node next=curr.next;
+            curr.next=prev;
+            prev=curr;
+            curr=next;
+        }
+        return prev;
     }
 
     public static boolean checkAnagram(String s, String s1){
@@ -446,6 +567,27 @@ public class PracticeQuestions {
             }
         }
         return maxLen;
+    }
+
+    public static String reverseASentence(String s){
+        StringBuilder res=new StringBuilder();
+        int startIndex=s.length()-1;
+        while(startIndex>=0){
+            while(startIndex>=0 && s.charAt(startIndex)==' '){
+                startIndex--;
+            }
+            if(startIndex<0) break;
+            int endIndex=startIndex;
+            while(startIndex>=0 && s.charAt(startIndex)!=' '){
+                startIndex--;
+            }
+            if(res.isEmpty())
+                res.append(s,startIndex+1,endIndex+1);
+            else{
+                res.append(" ").append(s,startIndex+1,endIndex+1);
+            }
+        }
+        return res.toString();
     }
 }
 

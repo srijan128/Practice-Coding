@@ -10,11 +10,18 @@ public class SlidingWindowQuestions {
         System.out.println(Arrays.toString(firstNegativeNumberInEveryWindowOfSizeKPattern(new int[]{12, -1, -7, 8, -15, 30, 16, 28}, 3)));
         System.out.println(countOccurrencesOfAnagramInGivenStringUsingMap("forxxorfxdofr","for"));
         System.out.println(maximumOfAllSubArraysOfSizeK(new int[]{10,7,8,11},2));
-        System.out.println(longestSubstringWithKUniqueCharacters("abcba",6));
+        System.out.println("check " + longestSubstringWithKUniqueCharacters("abcba",6));
         System.out.println(longestSubstringWithAllUniqueCharacters("xxx"));
         System.out.println(containsNearbyDuplicate(new int[]{0,1,2,3,4,0,0,7,8,9,10,11,12,0},1));
         System.out.println(longestSubstringWithEqual1And0("01100",5));
+        System.out.println(maxNumberOfBalloons("balloonballoon"));  // Expected: 2
+        System.out.println(maxNumberOfBalloons("bbaall"));          // Expected: 0
+        System.out.println(maxNumberOfBalloons("loonbalxballpoon"));// Expected: 2
+        System.out.println(findRepeatedDnaSequenceswithWhile("abcabc"));
+        System.out.println("[minimumWindowSubStringSlidingWindow] " + minimumWindowSubStringSlidingWindow("aebdecbcba","abcc"));
     }
+
+
 
     //leetcode- 2461. Maximum Sum of Distinct Subarrays With Length K
     public static int maxSumOfSubArrayOfSizeKDistinctElements(int [] a, int k){
@@ -35,6 +42,29 @@ public class SlidingWindowQuestions {
                 maxSum=sum;
         }
         return maxSum;
+    }
+
+
+    public static int maxNumberOfBalloons(String text) {
+        int minCount = Integer.MAX_VALUE;
+        String word="ballon";
+        HashMap<Character,Integer> map=new HashMap<>();
+        // ToDo: Write Your Code Here.
+        for(char c1: text.toCharArray()){
+            map.put(c1,map.getOrDefault(c1,0)+1);
+        }
+       /* for(char c : word.toCharArray()){
+            if(map.containsKey(c) && map.get(c)>=1)
+                minCount=Math.min(minCount,map.get(c));
+            else
+                minCount=0;
+        } */
+        minCount=Math.min(minCount,map.getOrDefault('b',0));
+        minCount=Math.min(minCount,map.getOrDefault('a',0));
+        minCount=Math.min(minCount,map.getOrDefault('l',0)/2);
+        minCount=Math.min(minCount,map.getOrDefault('o',0)/2);
+        minCount=Math.min(minCount,map.getOrDefault('b',0));
+        return minCount;
     }
 
     public static int SWmaxSumOfSubArrayOfSizeKDistinctElements(int [] a, int k){
@@ -232,13 +262,15 @@ public class SlidingWindowQuestions {
         return maxLen;
     }
 
+
+
     public static int longestSubstringWithAllUniqueCharacters(String s){
         int wS=0,wE=0,maxLen=Integer.MIN_VALUE;
         Map<Character,Integer> map=new HashMap<>();
         while (wE<s.length()){
             map.put(s.charAt(wE),map.getOrDefault(s.charAt(wE),0)+1);
-            if(map.size()>wE-wS+1)
-                wE++;
+          /*  if(map.size()>wE-wS+1)
+                wE++; */
              if(map.size()==wE-wS+1){
                 maxLen=Math.max(maxLen,wE-wS+1);
                 wE++;
@@ -283,19 +315,58 @@ public class SlidingWindowQuestions {
         return maxLen;
     }
 
-    public List<String> findRepeatedDnaSequences(String s) {
+    public static List<String> findRepeatedDnaSequences(String s) {
         // AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT
         List<String> ans=new ArrayList<>();
-        if(s.length()<10)
+        if(s.length()<3)
             return ans;
         Map<String,Integer> map =new HashMap<>();
-        for(int i=0;i<=s.length()-10;i++){
-            String sub=s.substring(i,i+10);
+        for(int i=0;i<=s.length()-3;i++){
+            String sub=s.substring(i,i+3);
             map.put(sub,map.getOrDefault(sub,0)+1);
         }
         for(Map.Entry<String,Integer> entry: map.entrySet()){
             if(entry.getValue()>1)
                 ans.add(entry.getKey());
+        }
+        return ans;
+    }
+
+
+    public static List<String> findRepeatedDnaSequenceswithWhile(String s) {
+        // AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT
+        List<String> ans=new ArrayList<>();
+        Map<String,Integer> map =new HashMap<>();
+        if(s.length()<3){
+            return ans;
+        }
+        int wS=0,wE=0;
+        StringBuilder sb=new StringBuilder();
+        while(wE<s.length()){
+           // if(wE-wS+1<3){
+            if(sb.length()<3){
+                sb.append(s.charAt(wE));
+                wE++;
+          //  } else if(wE-wS+1==3){
+        } else if(sb.length()==3){
+               // sb.append(s.charAt(wE));
+                wE++;
+                if(sb.length()==3)
+                    map.put(sb.toString(),map.getOrDefault(sb.toString(),0)+1);
+            }else {
+               // while(sb.length()>3) {
+                    sb.deleteCharAt(wS);
+                    // wE++;
+                    // sb.append(s.charAt(wE));
+                    wS++;
+               // }
+            }
+
+        }
+        for(Map.Entry<String,Integer> entry:map.entrySet()){
+            if(entry.getValue()>1){
+                ans.add(entry.getKey());
+            }
         }
         return ans;
     }
@@ -419,5 +490,157 @@ public class SlidingWindowQuestions {
             high++;
         }
         return ans;
+    }
+
+
+        public int fruitsIntoBasket(int[] fruits) {
+        Map<Integer,Integer> map=new HashMap<>();
+        int s=0,e=0,maxLen=0;
+        while(e<fruits.length){
+            map.put(fruits[e],map.getOrDefault(fruits[e],0)+1);
+            while (map.size() > 2) {
+                int leftFruit = fruits[s];
+                map.put(leftFruit, map.get(leftFruit) - 1);
+
+                // If the count of a fruit type reaches 0, remove it from the map
+                if (map.get(leftFruit) == 0) {
+                    map.remove(leftFruit);
+                }
+                s++; // Shrink the window from the left
+            }
+            maxLen = Math.max(maxLen, e - s + 1);
+
+            e++;
+        }
+         return maxLen;
+    }
+
+
+    public static int longestSubstringWithoutRepeatingCharactersBruteForce(String s){
+        char [] c=s.toCharArray();
+        int maxLen=0;
+        for(int i=0;i<c.length;i++){
+            int [] charIndex=new int[256];
+            for(int j=i;j<c.length;j++){
+                if(charIndex[c[j]]==1)
+                    break;
+                int len=j-i+1;
+                maxLen=Math.max(maxLen,len);
+                charIndex[c[j]]=1;
+            }
+        }
+        return maxLen;
+    }
+
+    public static int longestSubstringWithoutRepeatingCharactersOptimizedSlidingWindow(String s){
+        // abcadcb
+        int wS=0,wE=0,maxLen=0;
+        Map<Character,Integer> map=new HashMap<>();
+        while(wE<s.length()){
+            map.put(s.charAt(wE),map.getOrDefault(s.charAt(wE),0)+1);
+            if(map.size()==wE-wS+1){
+                maxLen=Math.max(maxLen,wE-wS+1);
+            }else if(map.size()<wE-wS+1){
+                while(map.size()<wE-wS+1){
+                    map.put(s.charAt(wS),map.get(s.charAt(wS))-1);
+                    if(map.get(s.charAt(wS))==0)
+                        map.remove(s.charAt(wS));
+                    wS++;
+                }
+            }
+            wE++;
+        }
+        return maxLen;
+    }
+
+    // Two POINTER
+
+    public int containerWithMaxWater(int[] height) {
+        int start=0,end=height.length-1,maxWater=0;
+        while(start<end){
+            int minHeight=Math.min(height[start],height[end]);
+            int len=end-start;
+            maxWater=Math.max(maxWater,minHeight*len);
+            if(height[start]<=height[end])
+                start++;
+            else
+                end--;
+        }
+        return maxWater;
+    }
+
+
+    // longest repeating character replacement
+    // Imp question
+    public int characterReplacement(String s, int k) {
+        // AABABCC
+        int left=0,maxFreq=0,maxWindow=0;
+        int [] freqArr = new int[26];
+        for(int right=0;right<s.length();right++){
+            freqArr[s.charAt(right)-'A']++;
+
+            maxFreq=Math.max(maxFreq,freqArr[s.charAt(right)-'A']);
+
+            int windowLen=right-left+1;
+
+            if(windowLen-maxFreq>k){
+                freqArr[s.charAt(left)-'A']--;
+                left++;
+            }
+
+            windowLen=right-left+1;
+            maxWindow=Math.max(maxWindow,windowLen);
+        }
+        return maxWindow;
+    }
+
+
+    public static String minimumWindowSubStringSlidingWindow(String s, String t) {
+        //"ADOBECODEBANC", t = "ABC"
+        //"BANC"
+        /*
+        tmap--->
+        A->1
+        B->1
+        C->1
+
+
+         */
+        int windowStart=0,countMatchedInT=0,minLen=Integer.MAX_VALUE,minWindowStart=0;
+        Map<Character,Integer> tMap=new HashMap<>();
+
+        for(char c: t.toCharArray()) tMap.put(c,tMap.getOrDefault(c,0)+1);
+
+        for(int windowEnd=0;windowEnd<s.length();windowEnd++){
+            char ch =s.charAt(windowEnd);
+            if(tMap.containsKey(ch)){
+                tMap.put(ch,tMap.get(ch)-1);
+                if(tMap.get(ch)>=0)
+                    countMatchedInT++;
+            }
+
+            while(countMatchedInT==t.length()){
+                if(minLen>windowEnd-windowStart+1){
+                    minLen=windowEnd-windowStart+1;
+                    minWindowStart=windowStart;
+                }
+                char leftChar=s.charAt(windowStart);
+                windowStart+=1;
+                if(tMap.containsKey(leftChar)){
+                    // Below if condition determines if the element size present in the map is 0 then countMatchedInT should be reduced by 1 because
+                    // there is exact number of leftChar count is exactly same in s and t string.
+                    // so if we remove the element from left side of the window and the count of the element is 0
+                    // we need at least one more same character element to be added in s to match the count
+                    if(tMap.get(leftChar)==0)
+                        countMatchedInT--;
+                    tMap.put(leftChar,tMap.get(leftChar)+1);
+                }
+            }
+        }
+
+        if(minLen > s.length()) {
+            return "";
+        }
+        return s.substring(minWindowStart, minWindowStart + minLen);
     }
 }

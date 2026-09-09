@@ -4,6 +4,12 @@ import java.util.*;
 
 public class RecursionProblems {
     public static void main(String[] args) {
+       /* ArrayList<Integer> al=new ArrayList<>(List.of(1,2,3));
+        Collections.sort(al);
+        reverseAnArrayUsingRecursion(al);
+        System.out.println(al);
+        System.out.println(Arrays.toString(reverseAnArrayUsingRec(new int[]{1,2,3},0)));
+        System.out.println(sumOf1stNNaturalNosWithoutSecondVariable(6));
         System.out.println(reverseANumber(54,0));
         System.out.println(reverseAString("abc",0,""));
         reverseAString1("abc",0,"");
@@ -26,6 +32,7 @@ public class RecursionProblems {
         Stack<Integer> stack1=new Stack<>();
         stack1.push(1);
         stack1.push(2);
+
 //        stack1.push(3);
 //        stack1.push(4);
 //        stack1.push(5);
@@ -48,6 +55,19 @@ public class RecursionProblems {
         System.out.println(generateAllBalancedParenthesis(3));
         System.out.println(generateNSizeBinaryNumbersWith1sGreaterThanEqualTo0s(3));
         josephusProblem(40,7);
+        mergeSort(new int[]{5,3,2});
+        System.out.println();
+        System.out.println(combSum(new int[]{2,4},4));
+        subsetSum(new int[]{3,1,2});
+        findNonRepeatingSubsets(new int[]{1,1});
+        printPermutations(new int[]{1,2});
+       // permutationsWithoutUsingExtraSpace(new ArrayList<>(List.of(1,2,3)),2);
+        System.out.println(Arrays.toString(generateFibonacciNumbers(3)));
+        int [] dp=new int[4];
+        Arrays.fill(dp,-1);
+        System.out.println(fibonacciUsingDP(3,dp)); */
+        int [] nums=new int[]{1,2};
+        System.out.println(subsetsWithDupSet(nums));
     }
 
     public static int reverseANumber(int n,int res){
@@ -56,6 +76,76 @@ public class RecursionProblems {
             return res;
         res=res*10+(n%10);
         return reverseANumber(n/10,res);
+    }
+
+    public static List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> ans=new ArrayList<>();
+        List<Integer> out=new ArrayList<>();
+        Arrays.sort(nums);
+        subsets(nums,0,ans,out);
+        return ans;
+    }
+
+    public static void subsets(int [] nums,int index,List<List<Integer>> ans,List<Integer> out){
+        ans.add(new ArrayList<>(out));
+        for(int i=index;i<nums.length;i++){
+            if(i != index && nums[i]==nums[i-1]) continue;
+            out.add(nums[i]);
+            subsets(nums,i+1,ans,out);
+            out.remove(out.size()-1);
+        }
+    }
+
+
+    public static List<List<Integer>> subsetsWithDupSet(int[] nums) {
+        Set<List<Integer>> ans=new HashSet<>();
+        List<Integer> out=new ArrayList<>();
+        Arrays.sort(nums);
+        subsetsSet(nums,0,ans,out);
+        return new ArrayList<>(ans);
+    }
+
+    public static void subsetsSet(int [] nums,int index,Set<List<Integer>> ans,List<Integer> out){
+        if(index==nums.length){
+            ans.add(new ArrayList<>(out));
+            return;
+        }
+        out.add(nums[index]);
+        subsetsSet(nums,index+1,ans,out);
+        out.remove(out.size()-1);
+        subsetsSet(nums,index+1,ans,out);
+    }
+
+    public static int[] generateFibonacciNumbers(int n) {
+        // Write your code here.
+        int[] memo = new int[n];
+        for (int i = 0; i < n; i++) {
+            memo[i]=fib(i);
+        }
+        return memo;
+    }
+
+    static int fib(int n)
+    {
+        int f[] = new int[n+2];
+
+        int i;
+        f[0] = 0;
+        f[1] = 1;
+
+        for (i = 2; i <= n; i++) {
+            f[i] = f[i - 1] + f[i - 2];
+        }
+        return f[n];
+    }
+
+    public static int fibonacciUsingDP(int n,int [] dp){
+        if(n<=1)
+            return n;
+        if(dp[n]!=-1)
+            return dp[n];
+        else
+            return dp[n]=fibonacciUsingDP(n-1,dp)+fibonacciUsingDP(n-2,dp);
     }
 
     public static String reverseAString(String input,int index,String rev){
@@ -82,6 +172,19 @@ public class RecursionProblems {
         }
         print1ToN(n-1);
         System.out.println(n);
+    }
+
+    public static int sumOf1stNNaturalNos(int n,int sum){
+        if(n<1)
+            return sum;
+        sum+=n;
+        return sumOf1stNNaturalNos(n-1,sum);
+    }
+
+    public static int sumOf1stNNaturalNosWithoutSecondVariable(int n){
+        if(n<1)
+            return 0;
+        return n+sumOf1stNNaturalNosWithoutSecondVariable(n-1);
     }
 
     public static int factorialOfN(int n){
@@ -488,5 +591,367 @@ public class RecursionProblems {
         return t[sizeOfWeightArray][weightKnapsack];
     }
 
+    static boolean isSubsetSum(int set[], int n, int sum)
+    {
+        boolean [][] t=new boolean[n+1][sum+1];
+        for(int i=0;i<n+1;i++){
+            for(int j=0;j<sum+1;j++){
+                if(i==0)
+                    t[i][j]=false;
+                if(j==0)
+                    t[i][j]=true;
+            }
+        }
 
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<sum+1;j++){
+                if(set[i-1]<=j){
+                    t[i][j]=t[i-1][j-set[i-1]] || t[i-1][j];
+                }else{
+                    t[i][j]=t[i-1][j];
+                }
+            }
+        }
+        return t[n][sum];
+    }
+
+    static boolean equalSumPartition(int set[], int n){
+        int sum=0;
+        for(int i:set)
+            sum+=i;
+        if(sum%2!=0)
+            return false;
+        else return isSubsetSum(set,n,sum/2);
+    }
+
+
+    static int countOfSubsetsWithAGivenSum(int [] a,int sum){
+        int [][] t=new int[a.length+1][sum+1];
+        for(int i=0;i<a.length+1;i++){
+            for(int j=0;j<sum+1;j++){
+                if(i==0)
+                    t[i][j]=0;
+                if(j==0)
+                    t[i][j]=1;
+            }
+        }
+
+        for(int i=1;i<a.length+1;i++){
+            for(int j=1;j<sum+1;j++){
+                if(a[i-1]<=j){
+                    t[i][j]=t[i-1][j-a[i-1]] + t[i-1][j];
+                }else{
+                    t[i][j]=t[i-1][j];
+                }
+            }
+        }
+        return t[a.length][sum];
+    }
+
+    public static int [] reverseAnArrayUsingRec(int [] a,int index){
+        if(index>=a.length/2)
+            return a;
+        int temp=a[index];
+        a[index]=a[a.length-index-1];
+        a[a.length-index-1]=temp;
+        return reverseAnArrayUsingRec(a,index+1);
+    }
+
+
+    public static void reverseAnArrayUsingRecursion(ArrayList<Integer> a){
+        if(a.size()==1) {
+            //System.out.println(a);
+            return;
+        }
+        int temp=a.get(a.size()-1);
+        a.remove(a.size()-1);
+        reverseAnArrayUsingRecursion(a);
+        addInArray(a,temp);
+    }
+
+    private static void addInArray(ArrayList<Integer> list, int temp) {
+        if(list.isEmpty()) {
+            list.add(temp);
+            return;
+        }
+        int val=list.get(list.size()-1);
+        list.remove(list.size()-1);
+        addInArray(list,temp);
+        list.add(val);
+    }
+
+    public static void getSubsequencesWhereSumIsK(int [] a, int index,List<Integer> ans,List<List<Integer>> ansList,
+                                                  int sum,int k){
+        if (index == a.length){
+            if(sum==k){
+                ansList.add(new ArrayList<>(ans));
+                // System.out.println(ans);
+            }
+            return;
+        }
+        ans.add(a[index]);
+        sum+=a[index];
+        getSubsequencesWhereSumIsK(a,index+1,ans,ansList,sum,k);
+        ans.remove(Integer.valueOf(a[index]));
+        sum-=a[index];
+        getSubsequencesWhereSumIsK(a,index+1,ans,ansList,sum,k);
+    }
+
+    public static boolean getOnlyOneSubsequenceWhereSumIsK(int [] a, int index,List<Integer> ans,List<List<Integer>> ansList,
+                                                  int sum,int k){
+        if (index == a.length){
+            if(sum==k){
+                ansList.add(new ArrayList<>(ans));
+                return true;
+                // System.out.println(ans);
+            }
+            return false;
+        }
+        ans.add(a[index]);
+        sum+=a[index];
+        if(getOnlyOneSubsequenceWhereSumIsK(a,index+1,ans,ansList,sum,k))
+            return true;
+        ans.remove(Integer.valueOf(a[index]));
+        sum-=a[index];
+        if(getOnlyOneSubsequenceWhereSumIsK(a,index+1,ans,ansList,sum,k))
+            return true;
+        return false;
+    }
+
+    public static int countSubsequencesWhereSumIsK(int [] a, int index,List<Integer> ans,
+                                                   int sum,int k){
+        if (index == a.length){
+            if(sum==k){
+                return 1;
+            }
+            return 0;
+        }
+        ans.add(a[index]);
+        sum+=a[index];
+        int l= countSubsequencesWhereSumIsK(a,index+1,ans,sum,k);
+        ans.remove(Integer.valueOf(a[index]));
+        sum-=a[index];
+        int r = countSubsequencesWhereSumIsK(a,index+1,ans,sum,k);
+        return l+r;
+    }
+
+    public static void mergeSort(int [] a){
+        int low=0;
+        int high=a.length-1;
+        divideAndMerge(a,low,high);
+            Arrays.stream(a).forEach(i -> System.out.print(i + " "));
+    }
+
+    private static void divideAndMerge(int[] a, int low, int high) {
+        //Extra safety for code to not break
+        // we can check with == also
+        if(low>=high)
+            return;
+        int mid=low+(high-low)/2;
+        divideAndMerge(a,low,mid);
+        divideAndMerge(a,mid+1,high);
+        mergeArrays(a,low,mid,high);
+    }
+
+    private static void mergeArrays(int[] a, int low,int mid, int high) {
+        List<Integer> temp=new ArrayList<>();
+        int left=low;
+        int right=mid+1;
+        while(left<=mid && right<=high){
+            if(a[left]<=a[right]){
+                temp.add(a[left]);
+                left++;
+            }else{
+                temp.add(a[right]);
+                right++;
+            }
+        }
+        while(left<=mid){
+            temp.add(a[left]);
+            left++;
+        }
+        while(right<=high){
+            temp.add(a[right]);
+            right++;
+        }
+        for(int i=low;i<=high;i++){
+            a[i]=temp.get(i-low);
+        }
+    }
+
+    public static List<List<Integer>> combSum(int []a, int target) {
+        List<List<Integer>> ansList=new ArrayList<>();
+        List<Integer> ans=new ArrayList<>();
+        int index=0;
+        Arrays.sort(a);
+        combinationSum(a,index,target,ans,ansList);
+        return ansList;
+    }
+
+    public static void combinationSum(int [] a,int index,int target,
+                                      List<Integer> ans,List<List<Integer>> ansList){
+        if(index==a.length){
+            if(target==0){
+                ansList.add(new ArrayList<>(ans));
+            }
+            return;
+        }
+
+        if(a[index]<=target){
+            ans.add(a[index]);
+            combinationSum(a,index,target-a[index],ans,ansList);
+            ans.remove(ans.size()-1);
+        }
+        combinationSum(a,index+1,target,ans,ansList);
+
+    }
+
+
+    // Better approach of the above problems with unique elements
+    // Combination Sum 2
+
+    public static List<List<Integer>> combSumBetterApproach(int []a, int target) {
+        List<List<Integer>> ansList=new ArrayList<>();
+        List<Integer> ans=new ArrayList<>();
+        int index=0;
+        Arrays.sort(a);
+        findCombinations(index,a,target,ansList,ans);
+        return ansList;
+    }
+    public static void findCombinations(int index, int [] a,int target,List<List<Integer>> ansList, List<Integer> ans){
+        if(target==0){
+            ansList.add(new ArrayList<>(ans));
+            return;
+        }
+        for(int i=index;i<a.length;i++){
+            if(i>index && a[i]==a[i-1])
+                continue;
+            if(a[i]>target)
+                break;
+            ans.add(a[i]);
+            findCombinations(i+1,a,target-a[i],ansList,ans);
+            ans.remove(ans.size()-1);
+        }
+    }
+
+    public static void subsetSum(int [] a){
+        List<Integer> ansList=new ArrayList<>();
+        findSumForAllSubsets(a,0,0,ansList);
+        Collections.sort(ansList);
+        System.out.println(ansList);
+    }
+
+    private static void findSumForAllSubsets(int[] a, int index, int sum,  List<Integer> ansList) {
+        if(index==a.length){
+            ansList.add(sum);
+            return;
+        }
+        //ans.add(a[index]);
+        sum+=a[index];
+        findSumForAllSubsets(a,index+1,sum,ansList);
+        sum-=a[index];
+        findSumForAllSubsets(a,index+1,sum,ansList);
+    }
+
+    public static void findNonRepeatingSubsets(int [] a){
+        ArrayList<ArrayList<Integer>> ansList=new ArrayList<>();
+        ArrayList<Integer> ans=new ArrayList<>();
+        Arrays.sort(a);
+        findSubSets(a,0,ans,ansList);
+       /* ansList.sort(((o1, o2) -> {
+            int minLen=Math.min(o1.size(), o2.size());
+            for(int i=0;i<minLen;i++){
+                int lexicographicalPosition = o1.get(i).compareTo(o2.get(i));
+                if (lexicographicalPosition != 0) {
+                    return lexicographicalPosition;
+                }
+            }
+            return Integer.compare(o1.size(), o2.size());
+        })); */
+        System.out.println(ansList);
+    }
+
+    private static void findSubSets(int[] a, int index, ArrayList<Integer> ans, ArrayList<ArrayList<Integer>> ansList) {
+       // if(index==a.length) {
+            ansList.add(new ArrayList<>(ans));
+         //   return;
+       // }
+
+        for(int i=index;i<a.length;i++){
+            if(i!=index && a[i]==a[i-1]) continue;
+            ans.add(a[i]);
+            findSubSets(a,i+1,ans,ansList);
+            ans.remove(ans.size()-1);
+        }
+
+    }
+
+    public static  void printPermutations(int [] a){
+        ArrayList<ArrayList<Integer>> ansList=new ArrayList<>();
+        ArrayList<Integer> ans=new ArrayList<>();
+        Set<Integer> set=new HashSet<>();
+        generateArrayPermutations(a,ans,ansList,set);
+        System.out.println(ansList);
+    }
+
+    private static void generateArrayPermutations(int[] a,ArrayList<Integer> ans,
+                                                  ArrayList<ArrayList<Integer>> ansList,Set<Integer> set) {
+        if(ans.size()==a.length){
+            ansList.add(new ArrayList<>(ans));
+            return;
+        }
+        for(int i=0;i<a.length;i++) {
+            if(!set.contains(a[i])) {
+                ans.add(a[i]);
+                set.add(a[i]);
+                generateArrayPermutations(a, ans, ansList, set);
+
+                ans.remove(ans.size() - 1);
+                set.remove(a[i]);
+            }
+        }
+    }
+
+    static ArrayList<ArrayList<Integer>> permutationsWithoutUsingExtraSpace(ArrayList<Integer> arr, int size) {
+        ArrayList<ArrayList<Integer>> ansList=new ArrayList<>();
+        getAllPermutations(arr, 0, ansList);
+        return ansList;
+    }
+
+    public static void getAllPermutations(ArrayList<Integer> arr, int index,
+                                          ArrayList<ArrayList<Integer>> ansList){
+        if(arr.size()==index){
+            ansList.add(new ArrayList<>(arr));
+            return;
+        }
+
+        for(int i=index;i<arr.size();i++){
+            swap(arr,i,index);
+            getAllPermutations(arr, index+1, ansList);
+            swap(arr,i,index);
+        }
+    }
+
+    public static void swap(ArrayList<Integer> arr,int i,int index){
+        int temp=arr.get(i);
+        arr.set(i, arr.get(index));
+        arr.set(index, temp);
+    }
+
+    public static String reverseString(String str) {
+        // Start the recursion with the original string and an empty accumulator
+        return reverseHelper(str, "");
+    }
+
+    private static String reverseHelper(String str, String accumulator) {
+        // Base case: if the input string is empty, return the accumulated result
+        if (str.isEmpty()) {
+            return accumulator;
+        }
+
+        // Recursive step:
+        // Take the first character and put it at the FRONT of the accumulator
+        // Then pass the rest of the string to the next call
+        return reverseHelper(str.substring(1), str.charAt(0) + accumulator);
+    }
 }
